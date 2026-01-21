@@ -72,7 +72,15 @@ client.on('interactionCreate', async interaction => {
         try {
             await command.autocomplete(interaction);
         } catch (error) {
-            console.error(error);
+            console.error(`[AUTOCOMPLETE ERROR] Command: ${interaction.commandName}`, error);
+            // Try to respond with empty choices to stop the loading state
+            try {
+                if (!interaction.responded) {
+                    await interaction.respond([]);
+                }
+            } catch (e) {
+                // Ignore error on recovery
+            }
         }
         return;
     }

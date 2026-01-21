@@ -1,4 +1,5 @@
-const { SlashCommandBuilder, ChannelType, PermissionFlagsBits, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require('discord.js');
+const { SlashCommandBuilder, ChannelType } = require('discord.js');
+const { CHALLENGE_CATEGORIES } = require('../constants');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -15,17 +16,7 @@ module.exports = {
                 .setName('category')
                 .setDescription('Challenge category')
                 .setRequired(true)
-                .addChoices(
-                    { name: '🌐 Web', value: 'Web' },
-                    { name: '🔐 Crypto', value: 'Crypto' },
-                    { name: '🔍 Forensics', value: 'Forensics' },
-                    { name: '🔄 Reversing', value: 'Reversing' },
-                    { name: '🎲 Misc', value: 'Misc' },
-                    { name: '💥 Pwn', value: 'Pwn' },
-                    { name: '🖼️ Steganography', value: 'Stego' },
-                    { name: '📱 Mobile', value: 'Mobile' },
-                    { name: '🕵️ OSINT', value: 'OSINT' }
-                )
+                .addChoices(...CHALLENGE_CATEGORIES)
         )
         .addStringOption(option =>
             option
@@ -47,10 +38,22 @@ module.exports = {
                 .setAutocomplete(true)
         ),
     async autocomplete(interaction) {
-        const focusedValue = interaction.options.getFocused();
+        const focusedOption = interaction.options.getFocused(true);
+
+        // Only handle autocomplete for 'forum' option
+        if (focusedOption.name !== 'forum') return;
+
+        const focusedValue = focusedOption.value;
+        const guild = interaction.guild;
+
+        // If not in a guild, return empty
+        if (!guild) {
+            await interaction.respond([]);
+            return;
+        }
 
         // Get all forum channels in the guild
-        const forumChannels = interaction.guild.channels.cache.filter(
+        const forumChannels = guild.channels.cache.filter(
             channel => channel.type === ChannelType.GuildForum
         );
 

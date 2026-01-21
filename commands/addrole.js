@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { CHALLENGE_CATEGORIES } = require('../constants');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -15,17 +16,7 @@ module.exports = {
                 .setName('category')
                 .setDescription('The CTF category role')
                 .setRequired(true)
-                .addChoices(
-                    { name: '🌐 Web', value: 'Web' },
-                    { name: '🔐 Crypto', value: 'Crypto' },
-                    { name: '🔍 Forensics', value: 'Forensics' },
-                    { name: '🔄 Reversing', value: 'Reversing' },
-                    { name: '🎲 Misc', value: 'Misc' },
-                    { name: '💥 Pwn', value: 'Pwn' },
-                    { name: '🖼️ Steganography', value: 'Stego' },
-                    { name: '📱 Mobile', value: 'Mobile' },
-                    { name: '🕵️ OSINT', value: 'OSINT' }
-                )
+                .addChoices(...CHALLENGE_CATEGORIES)
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
     async execute(interaction) {

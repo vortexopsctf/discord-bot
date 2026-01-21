@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
+const { CHALLENGE_CATEGORIES } = require('../constants');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -40,26 +41,28 @@ module.exports = {
                 parent: category.id,
             });
 
+            // Prepare forum tags from constants + status tags
+            const tags = CHALLENGE_CATEGORIES.map(cat => {
+                // Extract emoji from name (e.g., "🌐 Web" -> "🌐")
+                const emoji = cat.name.split(' ')[0];
+                const name = cat.value;
+                return { name, emoji };
+            });
+
+            // Add status tags
+            tags.push(
+                { name: 'Solved', emoji: '✅' },
+                { name: 'In Progress', emoji: '🔄' },
+                { name: 'Unsolved', emoji: '�' }
+            );
+
             // Create forum channel for challenges
             const forumChannel = await guild.channels.create({
                 name: `${ctfName}-challenges`,
                 type: ChannelType.GuildForum,
                 parent: category.id,
                 topic: `CTF challenges for ${ctfName}. Create a new post for each challenge using /createchallenge`,
-                availableTags: [
-                    { name: 'Web', emoji: '🌐' },
-                    { name: 'Crypto', emoji: '🔐' },
-                    { name: 'Forensics', emoji: '🔍' },
-                    { name: 'Reversing', emoji: '🔄' },
-                    { name: 'Misc', emoji: '🎲' },
-                    { name: 'Pwn', emoji: '💥' },
-                    { name: 'Stego', emoji: '🖼️' },
-                    { name: 'Mobile', emoji: '📱' },
-                    { name: 'OSINT', emoji: '🕵️' },
-                    { name: 'Solved', emoji: '✅' },
-                    { name: 'In Progress', emoji: '🔄' },
-                    { name: 'Unsolved', emoji: '🔴' },
-                ],
+                availableTags: tags,
             });
 
             // Send success message
