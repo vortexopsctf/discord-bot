@@ -31,11 +31,24 @@ Slash commands are located in the `commands/` directory. Each command exports:
 - `/ping` - Simple health check that responds with "Pong!"
 - `/createctf` - Create a complete CTF workspace with organized channels
 - `/createchallenge` - Create a new forum post for a CTF challenge with category and template
+- `/help` - Display help information about available bot commands
+- `/archivectf` - Archive a completed CTF workspace
+- `/addrole` - Assign CTF category roles to users (auto-creates role if missing)
 
-**Planned Commands:**
+**Command Details:**
 
-#### `/help`
-Display help information about available bot commands and their usage.
+#### `/addrole`
+Assign a CTF category role (Web, Crypto, etc.) to a user.
+
+**Parameters:**
+- `user` (required) - The user to assign the role to
+- `category` (required) - The CTF category role (select menu)
+
+**Actions:**
+- Checks if the role exists (e.g., "Web", "Crypto")
+- Creates the role if it doesn't exist
+- Assigns the role to the specified user
+- Sends confirmation message
 
 #### `/archivectf`
 Archive a completed CTF workspace to preserve it while preventing new activity.
