@@ -30,6 +30,7 @@ Slash commands are located in the `commands/` directory. Each command exports:
 **Implemented Commands:**
 - `/ping` - Simple health check that responds with "Pong!"
 - `/createctf` - Create a complete CTF workspace with organized channels
+- `/createchallenge` - Create a new forum post for a CTF challenge with category and template
 
 **Planned Commands:**
 
@@ -79,6 +80,14 @@ Status: 🔴 Unsolved
 ## Solution
 [To be filled when solved]
 ```
+
+## Multi-CTF Support
+
+The bot now supports managing multiple concurrent CTF events! The `/createchallenge` command includes an optional `forum` parameter with autocomplete, allowing you to select which CTF workspace to post challenges in.
+
+**Usage:**
+- Without forum parameter: Auto-detects the appropriate forum (backwards compatible)
+- With forum parameter: Start typing the forum name and select from autocomplete
 
 ## Future Enhancements
 - Challenge difficulty tracking
