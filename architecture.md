@@ -37,6 +37,24 @@ Slash commands are located in the `commands/` directory. Each command exports:
 #### `/help`
 Display help information about available bot commands and their usage.
 
+#### `/archivectf`
+Archive a completed CTF workspace to preserve it while preventing new activity.
+
+**Parameters:**
+- `name` (required) - Name of the CTF to archive (autocomplete enabled)
+
+**Actions:**
+- Renames the category to `📦 Archived - [CTF Name]`
+- Locks all channels in the category (removes send/post permissions for @everyone)
+- Moves the category to the bottom of the channel list (lower position number)
+- Sends a confirmation message with archive timestamp
+
+**Benefits:**
+- Preserves all CTF content (messages, forum posts, solutions)
+- Prevents accidental new messages or posts
+- Keeps past CTFs accessible for reference and learning
+- Maintains organized server structure
+
 #### `/createctf`
 Create a complete CTF workspace with:
 - Text channel for general discussion
