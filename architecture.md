@@ -34,6 +34,7 @@ Slash commands are located in the `commands/` directory. Each command exports:
 - `/help` - Display help information about available bot commands
 - `/archivectf` - Archive a completed CTF workspace
 - `/addrole` - Assign CTF category roles to users (auto-creates role if missing)
+- `/assign` - Assign a user to a challenge and track progress
 
 **Command Details:**
 
@@ -111,6 +112,23 @@ Status: 🔴 Unsolved
 ## Solution
 [To be filled when solved]
 ```
+
+#### `/assign`
+Assign a user to a specific challenge and track their progress.
+
+**Parameters:**
+- `user` (required) - The user working on the challenge
+- `challenge` (optional) - The challenge forum post (defaults to current thread)
+
+**Actions:**
+- Updates the main challenge post to list "Assigned Users"
+- Adds the user to the thread (if not already added)
+- Sends a confirmation message in the thread
+- Updates the status tag to "In Progress" (if currently "Unsolved")
+
+**Data Persistence:**
+- Assignments are tracked directly in the challenge post content
+- No external database required (uses Discord message as source of truth)
 
 ## Multi-CTF Support
 
