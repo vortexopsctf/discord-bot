@@ -1,0 +1,10 @@
+services:
+  discord-bot:
+    build: .
+    image: vortexops-discord-bot
+    container_name: vortexops-discord-bot
+    restart: unless-stopped
+    volumes:
+      - ./config.json:/usr/src/app/config.json
+    # environment:
+    #   - NODE_ENV=production
