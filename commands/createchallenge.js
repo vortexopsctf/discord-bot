@@ -179,7 +179,7 @@ module.exports = {
                     const cookie = await getHedgedocCookie(baseUrl);
 
                     if (cookie) {
-                        const noteBody = `# ${challengeName}\n**Category:** ${category}\n\n## Description\n${description}\n\n## Notes\n*Collaborative notes...*`;
+                        const noteBody = `tags: ${category}, ctfnotes\n ---\n# ${challengeName}\n**Category:** ${category}\n\n## Description\n${description}\n\n## Notes\n*Collaborative notes...*`;
 
                         const response = await fetch(`${baseUrl}/new`, {
                             method: 'POST',
