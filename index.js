@@ -10,6 +10,7 @@ const client = new Client({
         // Add more intents here if needed:
         GatewayIntentBits.GuildMessages,  // For message events
         GatewayIntentBits.MessageContent, // Privileged: needs to be enabled in Developer Portal
+        GatewayIntentBits.GuildScheduledEvents, // For managing events
     ],
 });
 
