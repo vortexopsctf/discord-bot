@@ -213,12 +213,34 @@ module.exports = {
             messageContent += `\n## 📝 Description\n${description}\n\n`;
             messageContent += `## 💡 Solution\n*To be filled when solved*\n`;
 
+            // Auto-assign users based on role
+            let assignedMembers = [];
+            const role = interaction.guild.roles.cache.find(r => r.name === category);
+
+            if (role) {
+                // Determine members to assign
+                assignedMembers = role.members.map(m => m);
+
+                if (assignedMembers.length > 0) {
+                    const mentions = assignedMembers.map(m => m.toString()).join(' ');
+                    messageContent += `**Assigned Users:** ${mentions}\n`;
+                }
+            }
+
             // Create forum post (thread)
             const thread = await forumChannel.threads.create({
                 name: `${category}: ${challengeName}`,
                 message: { content: messageContent },
                 appliedTags: tags,
             });
+
+            // Add members to the thread
+            if (assignedMembers.length > 0) {
+                // Add members in parallel, catching errors to prevent crash
+                await Promise.allSettled(assignedMembers.map(member =>
+                    thread.members.add(member.id).catch(e => console.error(`Failed to add user ${member.user.tag}:`, e))
+                ));
+            }
 
             await interaction.editReply({
                 content: `✅ Successfully created challenge: ${thread}\n\n` +
