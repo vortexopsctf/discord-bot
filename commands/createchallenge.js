@@ -1,5 +1,39 @@
 const { SlashCommandBuilder, ChannelType } = require('discord.js');
 const { CHALLENGE_CATEGORIES } = require('../constants');
+const { hedgedocUrl, hedgedocEmail, hedgedocPassword } = require('../config.json');
+
+let cachedCookie = null;
+let cookieExpiry = 0;
+
+async function getHedgedocCookie(baseUrl) {
+    if (cachedCookie && Date.now() < cookieExpiry) {
+        return cachedCookie;
+    }
+
+    try {
+        const params = new URLSearchParams();
+        params.append('email', hedgedocEmail);
+        params.append('password', hedgedocPassword);
+
+        const response = await fetch(`${baseUrl}/login`, {
+            method: 'POST',
+            body: params,
+            redirect: 'manual' // We expect a redirect after login
+        });
+
+        // Get cookie from headers
+        const setCookie = response.headers.get('set-cookie');
+        if (setCookie) {
+            // Simple extraction of connect.sid provided by HedgeDoc
+            cachedCookie = setCookie.split(';')[0];
+            cookieExpiry = Date.now() + (1000 * 60 * 60); // Cache for 1 hour
+            return cachedCookie;
+        }
+    } catch (e) {
+        console.error('HedgeDoc login failed:', e);
+    }
+    return null;
+}
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -135,12 +169,48 @@ module.exports = {
             messageContent += `**Category:** ${category}\n`;
             messageContent += `**Status:** 🔴 Unsolved\n`;
 
+            // Try to create HedgeDoc note
+            let noteUrl = null;
+            if (hedgedocUrl && hedgedocEmail && hedgedocPassword) {
+                try {
+                    // remove trailing slash if present
+                    const baseUrl = hedgedocUrl.replace(/\/$/, '');
+
+                    const cookie = await getHedgedocCookie(baseUrl);
+
+                    if (cookie) {
+                        const noteBody = `# ${challengeName}\n**Category:** ${category}\n\n## Description\n${description}\n\n## Notes\n*Collaborative notes...*`;
+
+                        const response = await fetch(`${baseUrl}/new`, {
+                            method: 'POST',
+                            body: noteBody,
+                            headers: {
+                                'Content-Type': 'text/markdown',
+                                'Cookie': cookie
+                            },
+                            redirect: 'follow'
+                        });
+
+                        if (response.ok) {
+                            noteUrl = response.url;
+                            messageContent += `**📝 Collaborative Notes:** ${noteUrl}\n`;
+                        } else {
+                            console.error('Failed to create HedgeDoc note:', response.statusText);
+                        }
+                    } else {
+                        console.error('Could not authenticate with HedgeDoc');
+                    }
+
+                } catch (err) {
+                    console.error('Error creating HedgeDoc note:', err);
+                }
+            }
+
             if (url) {
                 messageContent += `**URL:** ${url}\n`;
             }
 
             messageContent += `\n## 📝 Description\n${description}\n\n`;
-            messageContent += `## 🔍 Notes\n*Team notes and findings go here...*\n\n`;
             messageContent += `## 💡 Solution\n*To be filled when solved*\n`;
 
             // Create forum post (thread)
