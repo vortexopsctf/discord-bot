@@ -2,7 +2,19 @@
 
 A Discord bot to help with CTF communication.
 
-## Setup
+## Deployment
+
+### Using Docker (Recommended)
+
+1.  **Configure the bot:**
+    - Create `config.json` (see `config.json.sample`) with your tokens and secrets.
+
+2.  **Deploy:**
+    - **Linux:** Run `./deploy.sh`
+
+    This will build the Docker container and start it with restart persistence enabled (`restart: unless-stopped`).
+
+### Manual Setup
 
 1. **Install dependencies:**
    ```bash
@@ -27,13 +39,19 @@ A Discord bot to help with CTF communication.
 ## Project Structure
 
 ```
-├── commands/         # Slash command files
-│   └── ping.js      # Example ping command
-├── events/          # Event handler files
-│   └── ready.js     # Bot ready event
-├── index.js         # Main bot file
-├── deploy-commands.js  # Command deployment script
-└── config.json      # Bot configuration (not in git)
+├── commands/            # Slash command files
+│   ├── addctfevent.js   # Import CTF events from CTFTime
+│   ├── recreateroles.js # Sync category roles
+│   ├── createchallenge.js # Create challenge threads (with auto-assign)
+│   └── ...
+├── events/              # Event handler files
+│   └── ready.js         # Bot ready event
+├── index.js             # Main bot file
+├── deploy-commands.js   # Command deployment script
+├── config.json          # Bot configuration (not in git)
+├── Dockerfile           # Docker image definition
+├── docker-compose.yml   # Docker deployment config
+└── deploy.sh            # Deployment convenience script
 ```
 
 ## Adding Commands

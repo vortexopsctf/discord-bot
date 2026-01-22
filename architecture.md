@@ -34,7 +34,9 @@ Slash commands are located in the `commands/` directory. Each command exports:
 - `/help` - Display help information about available bot commands
 - `/archivectf` - Archive a completed CTF workspace
 - `/addrole` - Assign CTF category roles to users (auto-creates role if missing)
+- `/recreateroles` - Sync Discord roles with defined CTF categories (admin maintenance)
 - `/assign` - Assign a user to a challenge and track progress
+- `/addctfevent` - Import event details from CTFTime and create a Discord Scheduled Event
 
 **Command Details:**
 
@@ -126,9 +128,43 @@ Assign a user to a specific challenge and track their progress.
 - Sends a confirmation message in the thread
 - Updates the status tag to "In Progress" (if currently "Unsolved")
 
-**Data Persistence:**
 - Assignments are tracked directly in the challenge post content
 - No external database required (uses Discord message as source of truth)
+
+#### `/recreateroles`
+Ensures all CTF categories defined in `constants.js` have a corresponding role in the Discord server.
+
+**Actions:**
+- Iterates through the category list (Web, Crypto, Pwn, etc.)
+- Checks if a role with that name exists
+- Creates the role if missing (assumes "Manage Roles" permission)
+- specific permissions or colors are currently default
+
+#### `/addctfevent`
+Imports a CTF event from CTFTime using its ID and creates a Discord Scheduled Event.
+
+**Parameters:**
+- `id` (required) - The CTFTime Event ID (e.g., `3024`)
+
+**Actions:**
+- Fetches event data from CTFTime API v1
+- Retrieves Title, Description, Start/End Time, Logo, and URL
+- Creates a "Guild Scheduled Event" (External type)
+- Provides a link to the event page
+
+## Docker & Deployment
+
+The bot is designed to run in a Docker container for ease of deployment and persistence.
+
+**Components:**
+- **Dockerfile**: Defines the runtime environment (Node.js 20 Alpine).
+- **docker-compose.yml**: Orchestrates the service, handling restarts (`restart: unless-stopped`) and volume mounting (`config.json`).
+- **Scripts**: `deploy.sh` (Linux) and `deploy.bat` (Windows) provide one-click build and deploy capabilities.
+
+**Volume Mapping:**
+Secrets are NOT built into the image. The `config.json` file on the host is mounted into the container at runtime:
+- Host: `./config.json`
+- Container: `/usr/src/app/config.json`
 
 ## Multi-CTF Support
 
